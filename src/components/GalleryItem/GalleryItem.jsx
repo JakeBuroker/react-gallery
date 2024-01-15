@@ -1,27 +1,45 @@
 import React, { useState } from 'react';
+import axios from 'axios';
 
 const GalleryItem = ({ item }) => {
   const [showDescription, setShowDescription] = useState(false);
+  const [showLikes, setAddLikes] = useState(item.likes);
 
   const toggleDisplay = () => {
     setShowDescription(!showDescription);
   };
 
-  let clicked;
+  const addLike = () => {
+    axios.put(`/api/gallery/like/${item.id}`)
+      .then(() => {
+        setAddLikes(showLikes + 1);
+      })
+      .catch(error => {
+        console.error('Error updating likes:', error);
+      });
+  };
+
+  let itemSwitch;
   if (showDescription) {
-    clicked = <p>{item.description}</p>;
+    itemSwitch = <p data-testid="description">{item.description}</p>;
   } else {
-    clicked = <img src={item.url} />;
+    itemSwitch = <tr><img src={item.url} style={{ width: '300px'}} ></img></tr>;
   }
 
   return (
     <div data-testid="galleryItem">
-      {clicked}
-      <button onClick={toggleDisplay}>
+      {itemSwitch}
+      <h2>Likes: {showLikes}</h2>
+      <p>
+      <button data-testid="like" onClick={addLike} >Like</button> 
+      <button data-testid="toggle" onClick={toggleDisplay}>
         {showDescription ? 'Show Picture' : 'Show Description'}
       </button>
-    </div>
+        
+      </p>
+      </div>
   );
 };
 
 export default GalleryItem;
+

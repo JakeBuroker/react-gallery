@@ -1,34 +1,33 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from "axios";
 import GalleryItem from '../GalleryItem/GalleryItem';
-import { useEffect, useState } from "react";
 
 function GalleryList() {
-let [galleryList, setGalleryList] = useState([]);
-// Function to get the creatures from the server/database
-const fetchItems = () => {
-  axios
-    .get("/api/gallery")
-    .then((response) => {
-      // The actual array comes from the data attribute on the response
-      // Set data into component state
-      setGalleryList(response.data);
-    })
-    .catch(function (error) {
-      console.log("Error on get:", error);
-    });
-};
-useEffect(() => {
-  fetchItems();
-}, []);
-return (
-<ul>
-{galleryList.map((item) => (
-  <li  data-testid="galleryItem" key={item.id}>
-<GalleryItem data-testid="galleryItem" item={item} />
-  </li>
-))}
-</ul>
-)}
+  const [galleryList, setGalleryList] = useState([]);
 
-export default GalleryList
+  const fetchItems = () => {
+    axios.get("/api/gallery")
+      .then((response) => {
+        setGalleryList(response.data);
+      })
+      .catch((error) => {
+        console.log("Error on get:", error);
+      });
+  };
+
+  useEffect(() => {
+    fetchItems();
+  }, []);
+
+  return (
+    <table>
+      {galleryList.map((item) => (
+        <tr key={item.id}>
+          <GalleryItem item={item} />
+        </tr>
+      ))}
+    </table>
+  );
+}
+
+export default GalleryList;
